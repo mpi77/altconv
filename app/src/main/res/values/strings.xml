@@ -12,7 +12,7 @@
 
     <string-array name="currencyType">
         <item>BTC</item>
-        <item>VTC</item>
+        <item>LTC</item>
         <item>DRK</item>
         <item>NMC</item>
         <item>XRP</item>
