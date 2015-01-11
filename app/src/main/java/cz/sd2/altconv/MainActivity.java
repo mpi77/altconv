@@ -51,7 +51,7 @@ public class MainActivity extends ActionBarActivity {
         btnConvert.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(MainActivity.class.getName(), fromCurrency + " " + toCurrency);
+                convert();
             }
         });
     }
@@ -96,6 +96,28 @@ public class MainActivity extends ActionBarActivity {
         spTo.setAdapter(adapter);
         spTo.setOnItemSelectedListener(new ItemSelectedTo());
 
+    }
+
+    private void convert(){
+        Log.i(MainActivity.class.getName(), fromCurrency + " " + toCurrency);
+        double cc_btc = 0;
+        double cc_dst = 0;
+        try {
+            EditText te_value=(EditText)findViewById(R.id.te_value);
+            TextView calc_value=(TextView)findViewById(R.id.tv_calc_value);
+            cc_btc = cache.getJSONObject("courses").getDouble(fromCurrency);
+            cc_dst = cache.getJSONObject("courses").getDouble(toCurrency);
+            if(fromCurrency.equals(toCurrency)){
+                calc_value.setText(String.format("%s %s", te_value.getText(), toCurrency));
+            }else{
+                double amount = Double.parseDouble(te_value.getText().toString());
+                double toDestCurrency = amount * cc_btc * (1.0 / cc_dst);
+                calc_value.setText(String.format("%.3f %s", toDestCurrency, toCurrency));
+            }
+        } catch (Exception e) {
+            Log.i(MainActivity.class.getName(), fromCurrency + " " + toCurrency + " " + cc_btc);
+            makeToast("Conversion failed.", Toast.LENGTH_SHORT);
+        }
     }
 
     protected void makeToast(final String msg, final int length){
