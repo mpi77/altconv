@@ -9,4 +9,12 @@
     <string name="te_value">Value to convert</string>
     <string name="tv_calc_value"></string>
     <string name="btn_convert">Convert</string>
+
+    <string-array name="currencyType">
+        <item>BTC</item>
+        <item>VTC</item>
+        <item>DRK</item>
+        <item>NMC</item>
+        <item>XRP</item>
+    </string-array>
 </resources>
