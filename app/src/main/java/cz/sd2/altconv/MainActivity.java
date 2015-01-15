@@ -38,14 +38,12 @@ public class MainActivity extends ActionBarActivity {
     protected String fromCurrency;
     protected String toCurrency;
 
+    public static final String BUNDLE_CACHE = "cache";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        // TODO: btn to update cache
-        new RequestTask().execute("https://mgalix.sd2.cz/altconv/");
-
         Button btnConvert = (Button) findViewById(R.id.btn_convert);
 
         btnConvert.setOnClickListener(new View.OnClickListener() {
@@ -54,6 +52,24 @@ public class MainActivity extends ActionBarActivity {
                 convert();
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString(MainActivity.BUNDLE_CACHE, cache.toString());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        try {
+            cache = new JSONObject(savedInstanceState.getString(MainActivity.BUNDLE_CACHE));
+            Log.i(MainActivity.class.getName(), "Restored instance. " + savedInstanceState.getString(MainActivity.BUNDLE_CACHE));
+        } catch (JSONException e) {
+            Log.i(MainActivity.class.getName(), savedInstanceState.getString(MainActivity.BUNDLE_CACHE));
+            makeToast("Unable to restore conversion table.", Toast.LENGTH_SHORT);
+        }
     }
 
     @Override
@@ -80,6 +96,8 @@ public class MainActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if(id == R.id.action_download){
+            new RequestTask().execute("https://mgalix.sd2.cz/altconv/");
         }
 
         return super.onOptionsItemSelected(item);
