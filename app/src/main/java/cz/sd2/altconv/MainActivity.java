@@ -37,13 +37,12 @@ import java.io.InputStreamReader;
 
 public class MainActivity extends ActionBarActivity {
 
+    public static final String BUNDLE_CACHE = "cache";
+    public static final String BUNDLE_SERVER_URI = "serverURI";
     protected JSONObject cache = new JSONObject();
     protected String fromCurrency;
     protected String toCurrency;
     protected String serverURI = "https://mgalix.sd2.cz/altconv/";
-
-    public static final String BUNDLE_CACHE = "cache";
-    public static final String BUNDLE_SERVER_URI = "serverURI";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +59,14 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle savedInstanceState){
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(MainActivity.BUNDLE_CACHE, cache.toString());
         savedInstanceState.putString(MainActivity.BUNDLE_SERVER_URI, serverURI);
     }
 
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState){
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         try {
             cache = new JSONObject(savedInstanceState.getString(MainActivity.BUNDLE_CACHE));
@@ -79,7 +78,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onResume(){
+    protected void onResume() {
         super.onResume();
         setUpSpinnerData();
     }
@@ -102,14 +101,14 @@ public class MainActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             settingsDialog();
-        } else if(id == R.id.action_download){
+        } else if (id == R.id.action_download) {
             new RequestTask().execute(serverURI);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void settingsDialog(){
+    private void settingsDialog() {
         LayoutInflater li = LayoutInflater.from(this);
         View settView = li.inflate(R.layout.settings_dialog, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -121,13 +120,13 @@ public class MainActivity extends ActionBarActivity {
                 .setCancelable(false)
                 .setPositiveButton("OK",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
+                            public void onClick(DialogInterface dialog, int id) {
                                 serverURI = set_val.getText().toString();
                             }
                         })
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
+                            public void onClick(DialogInterface dialog, int id) {
                                 dialog.cancel();
                             }
                         });
@@ -136,9 +135,9 @@ public class MainActivity extends ActionBarActivity {
         alertDialog.show();
     }
 
-    private void setUpSpinnerData(){
-        Spinner spFrom=(Spinner)findViewById(R.id.fromcurrency_spin);
-        Spinner spTo=(Spinner)findViewById(R.id.tocurrency_spin);
+    private void setUpSpinnerData() {
+        Spinner spFrom = (Spinner) findViewById(R.id.fromcurrency_spin);
+        Spinner spTo = (Spinner) findViewById(R.id.tocurrency_spin);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.currencyType, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -149,18 +148,17 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    private void convert(){
-        Log.i(MainActivity.class.getName(), fromCurrency + " " + toCurrency);
+    private void convert() {
         double cc_btc = 0;
         double cc_dst = 0;
         try {
-            EditText te_value=(EditText)findViewById(R.id.te_value);
-            TextView calc_value=(TextView)findViewById(R.id.tv_calc_value);
+            EditText te_value = (EditText) findViewById(R.id.te_value);
+            TextView calc_value = (TextView) findViewById(R.id.tv_calc_value);
             cc_btc = cache.getJSONObject("courses").getDouble(fromCurrency);
             cc_dst = cache.getJSONObject("courses").getDouble(toCurrency);
-            if(fromCurrency.equals(toCurrency)){
+            if (fromCurrency.equals(toCurrency)) {
                 calc_value.setText(String.format("%s %s", te_value.getText(), toCurrency));
-            }else{
+            } else {
                 double amount = Double.parseDouble(te_value.getText().toString());
                 double toDestCurrency = amount * cc_btc * (1.0 / cc_dst);
                 calc_value.setText(String.format("%.3f %s", toDestCurrency, toCurrency));
@@ -171,37 +169,36 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    protected void makeToast(final String msg, final int length){
-        runOnUiThread(new Runnable()
-        {
-            public void run()
-            {
+    protected void makeToast(final String msg, final int length) {
+        runOnUiThread(new Runnable() {
+            public void run() {
                 Toast.makeText(getApplicationContext(), msg, length).show();
             }
         });
     }
 
     private class ItemSelectedFrom implements OnItemSelectedListener {
-        public void onNothingSelected(AdapterView<?> av){
+        public void onNothingSelected(AdapterView<?> av) {
         }
 
-        public void onItemSelected(AdapterView<?> av, View view, int position, long id){
-            TextView sel=(TextView)view;
-            String from=sel.getText().toString();
-            fromCurrency=from;
-            EditText te_value=(EditText)findViewById(R.id.te_value);
-            te_value.setHint("Enter "+fromCurrency+" amount");
+        public void onItemSelected(AdapterView<?> av, View view, int position, long id) {
+            TextView sel = (TextView) view;
+            String from = sel.getText().toString();
+            fromCurrency = from;
+            EditText te_value = (EditText) findViewById(R.id.te_value);
+            te_value.setHint("Enter " + fromCurrency + " amount");
         }
     }
 
-    private class ItemSelectedTo implements OnItemSelectedListener{
-        public void onNothingSelected(AdapterView<?> av){
+    private class ItemSelectedTo implements OnItemSelectedListener {
+        public void onNothingSelected(AdapterView<?> av) {
 
         }
-        public void onItemSelected(AdapterView<?> av, View view, int position, long id){
-            TextView sel=(TextView)view;
-            String to=sel.getText().toString();
-            toCurrency=to;
+
+        public void onItemSelected(AdapterView<?> av, View view, int position, long id) {
+            TextView sel = (TextView) view;
+            String to = sel.getText().toString();
+            toCurrency = to;
         }
     }
 
@@ -233,7 +230,7 @@ public class MainActivity extends ActionBarActivity {
             super.onPostExecute(result);
         }
 
-        private String getJsonString(String url)throws IOException {
+        private String getJsonString(String url) throws IOException {
             StringBuilder build = new StringBuilder();
             HttpClient client = new DefaultHttpClient();
             HttpGet httpGet = new HttpGet(url);
