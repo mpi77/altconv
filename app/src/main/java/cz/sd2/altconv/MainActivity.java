@@ -1,10 +1,13 @@
 package cz.sd2.altconv;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,8 +40,10 @@ public class MainActivity extends ActionBarActivity {
     protected JSONObject cache = new JSONObject();
     protected String fromCurrency;
     protected String toCurrency;
+    protected String serverURI = "https://mgalix.sd2.cz/altconv/";
 
     public static final String BUNDLE_CACHE = "cache";
+    public static final String BUNDLE_SERVER_URI = "serverURI";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +63,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onSaveInstanceState(Bundle savedInstanceState){
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(MainActivity.BUNDLE_CACHE, cache.toString());
+        savedInstanceState.putString(MainActivity.BUNDLE_SERVER_URI, serverURI);
     }
 
     @Override
@@ -65,10 +71,10 @@ public class MainActivity extends ActionBarActivity {
         super.onRestoreInstanceState(savedInstanceState);
         try {
             cache = new JSONObject(savedInstanceState.getString(MainActivity.BUNDLE_CACHE));
-            Log.i(MainActivity.class.getName(), "Restored instance. " + savedInstanceState.getString(MainActivity.BUNDLE_CACHE));
+            serverURI = savedInstanceState.getString(MainActivity.BUNDLE_SERVER_URI);
         } catch (JSONException e) {
             Log.i(MainActivity.class.getName(), savedInstanceState.getString(MainActivity.BUNDLE_CACHE));
-            makeToast("Unable to restore conversion table.", Toast.LENGTH_SHORT);
+            makeToast("Unable to restore courses.", Toast.LENGTH_SHORT);
         }
     }
 
@@ -95,12 +101,39 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            settingsDialog();
         } else if(id == R.id.action_download){
-            new RequestTask().execute("https://mgalix.sd2.cz/altconv/");
+            new RequestTask().execute(serverURI);
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void settingsDialog(){
+        LayoutInflater li = LayoutInflater.from(this);
+        View settView = li.inflate(R.layout.settings_dialog, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setView(settView);
+        final EditText set_val = (EditText) settView.findViewById(R.id.te_set_val);
+        set_val.setText(serverURI);
+
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                serverURI = set_val.getText().toString();
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
     private void setUpSpinnerData(){
