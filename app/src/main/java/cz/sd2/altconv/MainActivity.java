@@ -6,6 +6,8 @@ import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -64,6 +66,23 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 convert();
+            }
+        });
+
+        te_value.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                return;
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                convert();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                return;
             }
         });
     }
