@@ -39,16 +39,23 @@ public class MainActivity extends ActionBarActivity {
 
     public static final String BUNDLE_CACHE = "cache";
     public static final String BUNDLE_SERVER_URI = "serverURI";
+    public static final String CACHE_COURSES = "courses";
     protected JSONObject cache = new JSONObject();
     protected String fromCurrency;
     protected String toCurrency;
     protected String serverURI = "https://mgalix.sd2.cz/altconv/";
+    protected EditText te_value;
     protected TextView calc_value;
+    protected Spinner spFrom;
+    protected Spinner spTo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        spFrom = (Spinner) findViewById(R.id.fromcurrency_spin);
+        spTo = (Spinner) findViewById(R.id.tocurrency_spin);
+        te_value = (EditText) findViewById(R.id.te_value);
         calc_value = (TextView) findViewById(R.id.tv_calc_value);
 
         Button btnConvert = (Button) findViewById(R.id.btn_convert);
@@ -75,7 +82,6 @@ public class MainActivity extends ActionBarActivity {
         try {
             cache = new JSONObject(savedInstanceState.getString(MainActivity.BUNDLE_CACHE));
             serverURI = savedInstanceState.getString(MainActivity.BUNDLE_SERVER_URI);
-            calc_value.setText("");
         } catch (JSONException e) {
             Log.i(MainActivity.class.getName(), savedInstanceState.getString(MainActivity.BUNDLE_CACHE));
             makeToast("Unable to restore courses.", Toast.LENGTH_SHORT);
@@ -141,8 +147,6 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void setUpSpinnerData() {
-        Spinner spFrom = (Spinner) findViewById(R.id.fromcurrency_spin);
-        Spinner spTo = (Spinner) findViewById(R.id.tocurrency_spin);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.currencyType, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -157,12 +161,14 @@ public class MainActivity extends ActionBarActivity {
         double cc_btc = 0;
         double cc_dst = 0;
         try {
-            EditText te_value = (EditText) findViewById(R.id.te_value);
-            TextView calc_value = (TextView) findViewById(R.id.tv_calc_value);
-            cc_btc = cache.getJSONObject("courses").getDouble(fromCurrency);
-            cc_dst = cache.getJSONObject("courses").getDouble(toCurrency);
+            if(!cache.has(MainActivity.CACHE_COURSES)){
+                makeToast("Need to download courses first.", Toast.LENGTH_SHORT);
+                return;
+            }
+            cc_btc = cache.getJSONObject(MainActivity.CACHE_COURSES).getDouble(fromCurrency);
+            cc_dst = cache.getJSONObject(MainActivity.CACHE_COURSES).getDouble(toCurrency);
             if (fromCurrency.equals(toCurrency)) {
-                calc_value.setText(String.format("%s %s", te_value.getText(), toCurrency));
+                calc_value.setText(String.format("%s %s", te_value.getText().length() > 0 ? te_value.getText() : "0", toCurrency));
             } else {
                 double amount = Double.parseDouble(te_value.getText().toString());
                 double toDestCurrency = amount * cc_btc * (1.0 / cc_dst);
@@ -171,6 +177,7 @@ public class MainActivity extends ActionBarActivity {
         } catch (Exception e) {
             Log.i(MainActivity.class.getName(), fromCurrency + " " + toCurrency + " " + cc_btc);
             makeToast("Conversion failed.", Toast.LENGTH_SHORT);
+            calc_value.setText("");
         }
     }
 
@@ -190,7 +197,6 @@ public class MainActivity extends ActionBarActivity {
             TextView sel = (TextView) view;
             String from = sel.getText().toString();
             fromCurrency = from;
-            EditText te_value = (EditText) findViewById(R.id.te_value);
             te_value.setHint("Enter " + fromCurrency + " amount");
         }
     }
