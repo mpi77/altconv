@@ -11,6 +11,13 @@
     <string name="tv_set_tit">Type server URI</string>
     <string name="btn_convert">Convert</string>
 
+    <string name="msg_empty_courses">Need to download courses first.</string>
+    <string name="msg_restore_courses_fail">Unable to restore courses.</string>
+    <string name="msg_type_amount">Type amount in </string>
+    <string name="msg_download_ok">Downloading finished.</string>
+    <string name="msg_download_fail">Downloading failed.</string>
+    <string name="msg_conversion_failed">Conversion failed.</string>
+
     <string-array name="currencyType">
         <item>BTC</item>
         <item>LTC</item>

@@ -84,7 +84,7 @@ public class MainActivity extends ActionBarActivity {
             serverURI = savedInstanceState.getString(MainActivity.BUNDLE_SERVER_URI);
         } catch (JSONException e) {
             Log.i(MainActivity.class.getName(), savedInstanceState.getString(MainActivity.BUNDLE_CACHE));
-            makeToast("Unable to restore courses.", Toast.LENGTH_SHORT);
+            makeToast(getResources().getString(R.string.msg_restore_courses_fail), Toast.LENGTH_SHORT);
         }
     }
 
@@ -162,7 +162,7 @@ public class MainActivity extends ActionBarActivity {
         double cc_dst = 0;
         try {
             if(!cache.has(MainActivity.CACHE_COURSES)){
-                makeToast("Need to download courses first.", Toast.LENGTH_SHORT);
+                makeToast(getResources().getString(R.string.msg_empty_courses), Toast.LENGTH_SHORT);
                 return;
             }
             cc_btc = cache.getJSONObject(MainActivity.CACHE_COURSES).getDouble(fromCurrency);
@@ -176,7 +176,7 @@ public class MainActivity extends ActionBarActivity {
             }
         } catch (Exception e) {
             Log.i(MainActivity.class.getName(), fromCurrency + " " + toCurrency + " " + cc_btc);
-            makeToast("Conversion failed.", Toast.LENGTH_SHORT);
+            makeToast(getResources().getString(R.string.msg_conversion_failed), Toast.LENGTH_SHORT);
             calc_value.setText("");
         }
     }
@@ -197,7 +197,7 @@ public class MainActivity extends ActionBarActivity {
             TextView sel = (TextView) view;
             String from = sel.getText().toString();
             fromCurrency = from;
-            te_value.setHint("Enter " + fromCurrency + " amount");
+            te_value.setHint(getResources().getString(R.string.msg_type_amount) + " " + fromCurrency);
         }
     }
 
@@ -224,13 +224,13 @@ public class MainActivity extends ActionBarActivity {
                 rx = getJsonString(url[0]);
                 cache = new JSONObject(rx);
                 Log.i(MainActivity.class.getName(), cache.toString());
-                makeToast("Downloading finished.", Toast.LENGTH_SHORT);
+                makeToast(getResources().getString(R.string.msg_download_ok), Toast.LENGTH_SHORT);
             } catch (IOException e) {
                 Log.i(MainActivity.class.getName(), rx);
-                makeToast("Downloading failed.", Toast.LENGTH_SHORT);
+                makeToast(getResources().getString(R.string.msg_download_fail), Toast.LENGTH_SHORT);
             } catch (JSONException e) {
                 Log.i(MainActivity.class.getName(), cache.toString());
-                makeToast("Downloading failed.", Toast.LENGTH_SHORT);
+                makeToast(getResources().getString(R.string.msg_download_fail), Toast.LENGTH_SHORT);
             }
 
             return null;
