@@ -43,11 +43,14 @@ public class MainActivity extends ActionBarActivity {
     protected String fromCurrency;
     protected String toCurrency;
     protected String serverURI = "https://mgalix.sd2.cz/altconv/";
+    protected TextView calc_value;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        calc_value = (TextView) findViewById(R.id.tv_calc_value);
+
         Button btnConvert = (Button) findViewById(R.id.btn_convert);
 
         btnConvert.setOnClickListener(new View.OnClickListener() {
@@ -63,6 +66,7 @@ public class MainActivity extends ActionBarActivity {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putString(MainActivity.BUNDLE_CACHE, cache.toString());
         savedInstanceState.putString(MainActivity.BUNDLE_SERVER_URI, serverURI);
+        calc_value.setText("");
     }
 
     @Override
@@ -71,6 +75,7 @@ public class MainActivity extends ActionBarActivity {
         try {
             cache = new JSONObject(savedInstanceState.getString(MainActivity.BUNDLE_CACHE));
             serverURI = savedInstanceState.getString(MainActivity.BUNDLE_SERVER_URI);
+            calc_value.setText("");
         } catch (JSONException e) {
             Log.i(MainActivity.class.getName(), savedInstanceState.getString(MainActivity.BUNDLE_CACHE));
             makeToast("Unable to restore courses.", Toast.LENGTH_SHORT);
